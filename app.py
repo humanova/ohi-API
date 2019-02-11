@@ -44,4 +44,4 @@ def register():
     else:
         return jsonify(dict(success=False))
 
-app.run(host='0.0.0.0')
+app.run(host='0.0.0.0', port='80')
