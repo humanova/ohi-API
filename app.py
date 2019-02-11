@@ -19,29 +19,29 @@ app.config["DEBUG"] = False
 
 @app.route('/api/v1/login', methods=['POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json['username']
+    password = request.json['password']
     pass_hash = str2md5(password)
     
     user = db.GetUser(username, pass_hash)
     if not user == None:
         user.last_login = datetime.datetime.now()
-        return {'success' : 'true', 'userdata': {'username' : user.username, 'email' : user.email, 'register_date' : user.register_date}}
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, register_date=user.register_date)))
     else:
-        return {'success' : 'false'}
+        return jsonify(dict(success=False))
 
 @app.route('/api/v1/register', methods=['POST'])
 def register():
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json['username']
+    password = request.json['password']
     email = request.form['email']
     pass_hash = str2md5(password)
     
     user = db.AddUser(username, email, pass_hash)
     if not user == None:
         
-        return {'success' : 'true', 'userdata': {'username' : user.username, 'email' : user.email, 'register_date' : user.register_date}}
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,register_date=user.register_date)))
     else:
-        return {'success' : 'false'}
+        return jsonify(dict(success=False))
 
-app.run(host=5001)
+app.run(host='0.0.0.0')

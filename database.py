@@ -27,6 +27,7 @@ class User(BaseModel):
     username = CharField(unique=True)
     email = CharField(unique=True)
     password = CharField()
+    account_type = IntegerField()
     last_login = DateField()
     register_date = DateTimeField()
 
@@ -52,12 +53,13 @@ class DB:
             print(f"couldn't connect to database")
             self.is_connected = False
 
-    def AddUser(self, username, email, password):
+    def AddUser(self, username, acc_type, email, password):
         try:
             with db.atomic():
                 user = User.create(
                     username= username,
                     password= password,
+                    account_type = acc_type,
                     email = email,
                     last_login= datetime.datetime.now(),
                     register_date= datetime.datetime.now(),
