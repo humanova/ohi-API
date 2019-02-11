@@ -37,11 +37,11 @@ def register():
     email = request.form['email']
     pass_hash = str2md5(password)
     
-    user = db.AddUser(username, email, pass_hash)
+    user = db.AddUser(username, email, pass_hash, 1)
     if not user == None:
         
         return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
-app.run(host='0.0.0.0', port='80')
+app.run(host='0.0.0.0')

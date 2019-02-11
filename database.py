@@ -53,7 +53,7 @@ class DB:
             print(f"couldn't connect to database")
             self.is_connected = False
 
-    def AddUser(self, username, acc_type, email, password):
+    def AddUser(self, username, email, password, acc_type,):
         try:
             with db.atomic():
                 user = User.create(
