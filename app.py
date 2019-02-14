@@ -35,7 +35,7 @@ def login():
 def register():
     username = request.json['username']
     password = request.json['password']
-    email = request.form['email']
+    email = request.json['email']
     pass_hash = str2md5(password)
     
     user = db.AddUser(username, email, pass_hash, 1)
