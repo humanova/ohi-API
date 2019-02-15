@@ -32,6 +32,7 @@ class User(BaseModel):
     hwid = CharField()
     account_type = IntegerField()
     last_login = DateField()
+    sub_end_date = DateTimeField()
     register_date = DateTimeField()
 
 class DB:
@@ -58,6 +59,13 @@ class DB:
 
     def AddUser(self, username, email, password, acc_type):
         try:
+            now = datetime.datetime.now()
+            end_date = datetime.datetime()
+            if acc_type == 1: end_date = now + datetime.timedelta(days=30)
+            elif acc_type == 2: end_date = now + datetime.timedelta(days=90)
+            elif acc_type == 3: end_date = now + datetime.timedelta(days=1095)
+            else: end_date = now + datetime.timedelta(days=30)
+
             with db.atomic():
                 user = User.create(
                     username= username,
@@ -66,8 +74,9 @@ class DB:
                     unique_id = str2md5(username + email),
                     hwid = "not_set",
                     email = email,
-                    last_login= datetime.datetime.now(),
-                    register_date= datetime.datetime.now(),
+                    last_login= now,
+                    sub_end_date = end_date,
+                    register_date= now,
                 )
                 print(f"[DB] Registered a new user -> username : {username}")
                 return user

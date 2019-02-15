@@ -3,7 +3,7 @@ import flask
 import datetime
 from flask import request, jsonify
 import database
-from utils import str2md5
+from utils import str2md5, isexpired
 
 db = database.DB()
 db.Connect()
@@ -26,7 +26,9 @@ def login():
 
     if not user == None:
         user.last_login = datetime.datetime.now()
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, register_date=user.register_date)))
+        is_expired = isexpired(user.last_login, user.sub_end_date)
+
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
@@ -42,7 +44,9 @@ def app_login():
     if not user == None:
         user.hwid = hwid
         user.last_login = datetime.datetime.now()
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, register_date=user.register_date)))
+        is_expired = isexpired(user.last_login, user.sub_end_date)
+
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
