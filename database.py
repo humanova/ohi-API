@@ -6,6 +6,7 @@ import os
 import datetime
 from psycopg2 import *
 from peewee import * 
+from utils import str2md5
 
 DATABASE_NAME = os.environ['DATABASE_NAME']
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -27,6 +28,8 @@ class User(BaseModel):
     username = CharField(unique=True)
     email = CharField(unique=True)
     password = CharField()
+    unique_id = CharField()
+    hwid = CharField()
     account_type = IntegerField()
     last_login = DateField()
     register_date = DateTimeField()
@@ -60,6 +63,8 @@ class DB:
                     username= username,
                     password= password,
                     account_type = acc_type,
+                    unique_id = str2md5(username + email),
+                    hwid = "not_set",
                     email = email,
                     last_login= datetime.datetime.now(),
                     register_date= datetime.datetime.now(),

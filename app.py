@@ -3,10 +3,7 @@ import flask
 import datetime
 from flask import request, jsonify
 import database
-import hashlib
-
-def str2md5(text):
-    return hashlib.md5(text.encode("utf-8")).hexdigest()
+from utils import str2md5
 
 db = database.DB()
 db.Connect()
@@ -22,12 +19,15 @@ app.config["DEBUG"] = False
 def login():
     username = request.json['username']
     password = request.json['password']
+    hwid = request.json['hwid']
     pass_hash = str2md5(password)
     
     user = db.GetUser(username, pass_hash)
+
     if not user == None:
+        user.hwid = hwid
         user.last_login = datetime.datetime.now()
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, register_date=user.register_date)))
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
@@ -35,13 +35,14 @@ def login():
 def register():
     username = request.json['username']
     password = request.json['password']
+    
     email = request.json['email']
     pass_hash = str2md5(password)
     
     user = db.AddUser(username, email, pass_hash, 1)
     if not user == None:
         
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,register_date=user.register_date)))
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email, unique_id = user.unique_id, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
