@@ -4,6 +4,7 @@
 
 import os
 import datetime
+from datetime import timezone
 from psycopg2 import *
 from peewee import * 
 from utils import str2md5
@@ -33,6 +34,7 @@ class User(BaseModel):
     account_type = IntegerField()
     last_login = DateField()
     sub_end_date = DateTimeField()
+    sub_end_timestamp = BigIntegerField()
     register_date = DateTimeField()
 
 class DB:
@@ -65,6 +67,7 @@ class DB:
             elif acc_type == 2: end_date = now + datetime.timedelta(days=90)
             elif acc_type == 3: end_date = now + datetime.timedelta(days=1095)
             else: end_date = now + datetime.timedelta(days=30)
+            end_timestamp = end_date.replace(tzinfo=timezone.utc).timestamp()
 
             with db.atomic():
                 user = User.create(
@@ -76,6 +79,7 @@ class DB:
                     email = email,
                     last_login = now,
                     sub_end_date = end_date,
+                    sub_end_timestamp = end_timestamp,
                     register_date = now,
                 )
                 print(f"[DB] Registered a new user -> username : {username}")

@@ -28,7 +28,7 @@ def login():
         user.last_login = datetime.datetime.now()
         is_expired = isexpired(user.last_login, user.sub_end_date)
 
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, register_date=user.register_date)))
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, sub_end_timestamp = user.sub_end_timestamp, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
@@ -46,7 +46,7 @@ def app_login():
         user.last_login = datetime.datetime.now()
         is_expired = isexpired(user.last_login, user.sub_end_date)
 
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, register_date=user.register_date)))
+        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email,account_type = user.account_type, unique_id = user.unique_id, is_expired = is_expired, sub_end_date = user.sub_end_date, sub_end_timestamp = user.sub_end_timestamp, register_date=user.register_date)))
     else:
         return jsonify(dict(success=False))
 
