@@ -60,7 +60,7 @@ class DB:
     def AddUser(self, username, email, password, acc_type):
         try:
             now = datetime.datetime.now()
-            end_date = datetime.datetime()
+            end_date = now
             if acc_type == 1: end_date = now + datetime.timedelta(days=30)
             elif acc_type == 2: end_date = now + datetime.timedelta(days=90)
             elif acc_type == 3: end_date = now + datetime.timedelta(days=1095)
@@ -68,15 +68,15 @@ class DB:
 
             with db.atomic():
                 user = User.create(
-                    username= username,
-                    password= password,
+                    username = username,
+                    password = password,
                     account_type = acc_type,
                     unique_id = str2md5(username + email),
                     hwid = "not_set",
                     email = email,
-                    last_login= now,
+                    last_login = now,
                     sub_end_date = end_date,
-                    register_date= now,
+                    register_date = now,
                 )
                 print(f"[DB] Registered a new user -> username : {username}")
                 return user
