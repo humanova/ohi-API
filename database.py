@@ -39,7 +39,7 @@ class User(BaseModel):
 
 class Key(BaseModel):
     key_type = CharField(unique=True)
-    api_key = CharField(unique=True)
+    key = CharField(unique=True)
 
 class DB:
 
