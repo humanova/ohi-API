@@ -109,7 +109,7 @@ class DB:
 
     def GetUsers(self):
         try:
-            users = User.select().where(User.account_type > 0).get()
+            users = User.select()
         except:
             print(f"[DB] [GetUsers] Couldn't find any user")
             return None
