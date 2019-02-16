@@ -78,7 +78,7 @@ def get_users():
     key = db.CheckKey("api_key", api_key)
     if key:
         users = db.GetUsers()
-        if not users == None:
+        if not len(users) == 0:
             return jsonify(dict(success=True, data=model_to_dict(users)))
         else:
             return jsonify(dict(success=False))
