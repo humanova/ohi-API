@@ -79,8 +79,7 @@ def get_users():
     if key:
         users = db.GetUsers()
         if not users == None:
-            users_json = json.dumps(model_to_dict(users))
-            return jsonify(dict(success=True, data=users_json))
+            return jsonify(dict(success=True, data=model_to_dict(users)))
         else:
             return jsonify(dict(success=False))
     else:
