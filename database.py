@@ -32,7 +32,7 @@ class User(BaseModel):
     unique_id = CharField()
     hwid = CharField()
     account_type = IntegerField()
-    last_login = DateField()
+    last_login = DateTimeField()
     sub_end_date = DateTimeField()
     sub_end_timestamp = BigIntegerField()
     register_date = DateTimeField()
