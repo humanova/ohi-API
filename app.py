@@ -5,6 +5,7 @@ from flask import request, jsonify
 import database
 from database import User
 import json
+from peewee import *
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
 from utils import str2md5, isexpired
