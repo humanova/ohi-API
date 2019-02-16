@@ -37,6 +37,10 @@ class User(BaseModel):
     sub_end_timestamp = BigIntegerField()
     register_date = DateTimeField()
 
+class Key(BaseModel):
+    key_type = CharField(unique=True)
+    api_key = CharField(unique=True)
+
 class DB:
 
     def __init__(self):
@@ -45,7 +49,7 @@ class DB:
     
     def InitDatabase(self):
         try:
-            db.create_tables([User])
+            db.create_tables([User, Key])
         except Exception as e:
             print("Couldn't create the tables, it may already exist on the database...")
             print(e)
@@ -86,7 +90,14 @@ class DB:
                 return user
         except Exception as e:
             print(f'Error while registering a new user : {e}')
-        
+
+    def SuperGetUser(self, unique_id):
+        try:
+            user = User.select().where(User.unique_id == unique_id).get()
+        except:
+            print(f"[DB] Couldn't find any user with this credidental : {unique_id} ")
+            return None
+        return user    
 
     def GetUser(self, user_name, password):
         try:
@@ -96,4 +107,38 @@ class DB:
             return None
         return user
 
-    
+    def GetUsers(self):
+        try:
+            users = User.select().where(User.account_type > 0).get()
+        except:
+            print(f"[DB] [GetUsers] Couldn't find any user")
+            return None
+        return users
+
+    def AddKey(self, key_type, key):
+        try:
+            with db.atomic():
+                key = Key.create(
+                    key_type = key_type,
+                    key = key
+                )
+                print(f"[DB] Registered a new key -> key_type : {key_type}")
+                return key
+        except Exception as e:
+            print(f'Error while registering a new key : {e}')
+
+    def GetKey(self, key_type, key):
+        try:
+            key = Key.select().where(Key.key_type == key_type, Key.key == key).get()
+        except:
+            print(f"[DB] Couldn't find any key with these credidentals : {key_type} :  {key}")
+            return None
+            
+        return key
+
+    def CheckKey(self, key_type, key):
+        key = self.GetKey(key_type, key)
+        if not key == None:
+            return True
+        else:
+            return False 

@@ -3,6 +3,10 @@ import flask
 import datetime
 from flask import request, jsonify
 import database
+from database import User
+import json
+from playhouse.shortcuts import model_to_dict, dict_to_model
+
 from utils import str2md5, isexpired
 
 db = database.DB()
@@ -52,17 +56,55 @@ def app_login():
 
 @app.route('/api/v1/register', methods=['POST'])
 def register():
+    api_key = request.json['api_key']
     username = request.json['username']
     password = request.json['password']
-    
     email = request.json['email']
     pass_hash = str2md5(password)
     
-    user = db.AddUser(username, email, pass_hash, 1)
-    if not user == None:
-        
-        return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email, unique_id = user.unique_id, register_date=user.register_date)))
+    key = db.CheckKey("api_key", api_key)
+    if key:
+        user = db.AddUser(username, email, pass_hash, 1)
+        if not user == None:
+            return jsonify(dict(success=True,userdata=dict(username=user.username,email=user.email, unique_id = user.unique_id, register_date=user.register_date)))
+        else:
+            return jsonify(dict(success=False))
     else:
         return jsonify(dict(success=False))
 
+@app.route('/api/v1/users', methods=['POST'])
+def get_users():
+    api_key = request.json['api_key']
+    key = db.CheckKey("api_key", api_key)
+    if key:
+        users = db.GetUsers()
+        if not users == None:
+            users_json = json.dumps(model_to_dict(users))
+            return jsonify(dict(success=True, data=users_json))
+        else:
+            return jsonify(dict(success=False))
+    else:
+        return jsonify(dict(success=False))
+
+
+@app.route('/api/v1/edit_user', methods=['POST'])
+def edit_user():
+    api_key = request.json['api_key']
+    user_data_dict = request.json['user_data']
+    
+    key = db.CheckKey("api_key", api_key)
+    if key:
+        new_user_data = json.dumps(dict_to_model(User, user_data_dict))
+        user = db.SuperGetUser(new_user_data.unique_id)
+        if not user == None:
+            try:
+                user = new_user_data
+            except:
+                return jsonify(dict(success=False))
+            user_json = json.dumps(model_to_dict(user))
+            return jsonify(dict(success=True, data=user_json))
+        else:
+            return jsonify(dict(success=False))
+    else:
+        return jsonify(dict(success=False))        
 app.run(host='0.0.0.0', port=os.environ['PORT'])
