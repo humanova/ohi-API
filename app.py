@@ -83,7 +83,7 @@ def get_users():
             users_dictArr = []
             for user in users:
                 users_dictArr.append(model_to_dict(user))
-            return jsonify(dict(success=True, data=dict(users)))
+            return jsonify(dict(success=True, data=users))
         else:
             return jsonify(dict(success=False))
     else:
