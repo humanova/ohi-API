@@ -80,7 +80,10 @@ def get_users():
     if key:
         users = db.GetUsers()
         if not len(users) == 0:
-            return jsonify(dict(success=True, data=model_to_dict(users)))
+            users_dictArr = []
+            for user in users:
+                users_dictArr.append(model_to_dict(user))
+            return jsonify(dict(success=True, data=dict(users)))
         else:
             return jsonify(dict(success=False))
     else:
