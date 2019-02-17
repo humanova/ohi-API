@@ -1,10 +1,11 @@
 import os
 import flask
-import datetime
 from flask import request, jsonify
+import datetime
+import json
 import database
 from database import User
-import json
+
 from peewee import *
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
@@ -73,6 +74,22 @@ def register():
     else:
         return jsonify(dict(success=False))
 
+@app.route('/api/v1/change_sub_time', methods=['POST'])
+def change_sub_time():
+    api_key = request.json['api_key']
+    username = request.json['username']
+    new_sub_delta = request.json['hour_addition'] 
+    key = db.CheckKey("api_key", api_key)
+    if key:
+        user = db.GetUserByUsername(username)
+        if not user == None:
+            db.AddTimeToUser(user, new_sub_delta)
+            return jsonify(dict(success=True, new_timestamp = user.sub_end_timestamp))
+        else:
+            return jsonify(dict(success=False))
+    else:
+        return jsonify(dict(success=False))
+
 @app.route('/api/v1/users', methods=['POST'])
 def get_users():
     api_key = request.json['api_key']
@@ -98,7 +115,7 @@ def edit_user():
     key = db.CheckKey("api_key", api_key)
     if key:
         new_user_data = json.dumps(dict_to_model(User, user_data_dict))
-        user = db.SuperGetUser(new_user_data.unique_id)
+        user = db.GetUserByUniqueId(new_user_data.unique_id)
         if not user == None:
             try:
                 user = new_user_data

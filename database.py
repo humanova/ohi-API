@@ -89,15 +89,23 @@ class DB:
                 print(f"[DB] Registered a new user -> username : {username}")
                 return user
         except Exception as e:
-            print(f'Error while registering a new user : {e}')
+            print(f'[DB] Error while registering a new user : {e}')
 
-    def SuperGetUser(self, unique_id):
+    def GetUserByUniqueId(self, unique_id):
         try:
             user = User.select().where(User.unique_id == unique_id).get()
         except:
             print(f"[DB] Couldn't find any user with this credidental : {unique_id} ")
             return None
-        return user    
+        return user  
+
+    def GetUserByUsername(self, username):
+        try:
+            user = User.select().where(User.username == username).get()
+        except:
+            print(f"[DB] Couldn't find any user with this credidental : {username} ")
+            return None
+        return user  
 
     def GetUser(self, user_name, password):
         try:
@@ -115,6 +123,15 @@ class DB:
             return None
         return users
 
+    def AddTimeToUser(self, user, time_d):
+        new_date = user.sub_end_date + datetime.timedelta(hours=int(time_d))
+        new_end_timestamp = new_date.replace(tzinfo=timezone.utc).timestamp()
+        try:
+            user.sub_end_date = new_date
+            user.sub_end_timestamp = new_end_timestamp
+        except Exception as e:
+            print(f'[DB] Error while adding time delta to the sub_date : user : {user.username} : {e}')
+
     def AddKey(self, key_type, key):
         try:
             with db.atomic():
@@ -125,7 +142,7 @@ class DB:
                 print(f"[DB] Registered a new key -> key_type : {key_type}")
                 return key
         except Exception as e:
-            print(f'Error while registering a new key : {e}')
+            print(f'[DB] Error while registering a new key : {e}')
 
     def GetKey(self, key_type, key):
         try:
