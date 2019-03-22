@@ -129,8 +129,26 @@ class DB:
         try:
             user.sub_end_date = new_date
             user.sub_end_timestamp = new_end_timestamp
+            user.save()
         except Exception as e:
             print(f'[DB] Error while adding time delta to the sub_date : user : {user.username} : {e}')
+            return False
+        return True
+
+    def AddTimeToAll(self, time_d):
+
+        Users = User.select()
+        try:
+            for user in Users:
+                new_date = user.sub_end_date + datetime.timedelta(hours=int(time_d))
+                new_end_timestamp = new_date.replace(tzinfo=timezone.utc).timestamp()
+                user.sub_end_date = new_date
+                user.sub_end_timestamp = new_end_timestamp
+                user.save()
+        except Exception as e:
+            print(f'[DB] Error while adding time delta to the sub_date : -All Users- ')
+            return False, 0
+        return True, len(Users)
 
     def AddKey(self, key_type, key):
         try:

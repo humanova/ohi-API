@@ -83,10 +83,21 @@ def change_sub_time():
     if key:
         user = db.GetUserByUsername(username)
         if not user == None:
-            db.AddTimeToUser(user, new_sub_delta)
-            return jsonify(dict(success=True, new_timestamp = user.sub_end_timestamp))
+            succ = db.AddTimeToUser(user, new_sub_delta)
+            return jsonify(dict(success=succ, new_timestamp = user.sub_end_timestamp))
         else:
             return jsonify(dict(success=False))
+    else:
+        return jsonify(dict(success=False))
+
+@app.route('/api/v1/change_sub_time_all', methods=['POST'])
+def change_sub_time_all():
+    api_key = request.json['api_key']
+    new_sub_delta = request.json['hour_addition'] 
+    key = db.CheckKey("api_key", api_key)
+    if key:
+        succ, usrs = db.AddTimeToAll(new_sub_delta)
+        return jsonify(dict(success=succ, user_count=usrs))
     else:
         return jsonify(dict(success=False))
 
