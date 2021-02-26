@@ -1,4 +1,4 @@
-aiohttp==1.0.5
+aiohttp==3.7.4
 urllib3==1.25
 websockets==3.4
 peewee==3.8.2
